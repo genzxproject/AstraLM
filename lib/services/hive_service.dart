@@ -1,8 +1,14 @@
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../core/constants.dart';
 
+/// Keys that match this pattern are stored in Android Keystore via
+/// flutter_secure_storage instead of plain Hive.
+const _secureKeyPatterns = ['api_key', 'secret', 'token'];
+
 class HiveService extends GetxService {
+  final _secureStorage = const FlutterSecureStorage();
   late Box _sessionsBox;
   late Box _messagesBox;
   late Box _tasksBox;
@@ -30,11 +36,26 @@ class HiveService extends GetxService {
 
   // ─── Settings helpers ───────────────────────────
 
-  T? getSetting<T>(String key, {T? defaultValue}) {
+  bool _isSecureKey(String key) =>
+      _secureKeyPatterns.any((p) => key.toLowerCase().contains(p));
+
+  Future<T?> getSetting<T>(String key, {T? defaultValue}) async {
+    if (_isSecureKey(key)) {
+      final val = await _secureStorage.read(key: key);
+      if (val != null) return val as T;
+    }
     return _settingsBox.get(key, defaultValue: defaultValue) as T?;
   }
 
   Future<void> setSetting(String key, dynamic value) async {
+    if (_isSecureKey(key)) {
+      if (value == null || value.toString().isEmpty) {
+        await _secureStorage.delete(key: key);
+      } else {
+        await _secureStorage.write(key: key, value: value.toString());
+      }
+      return;
+    }
     await _settingsBox.put(key, value);
   }
 

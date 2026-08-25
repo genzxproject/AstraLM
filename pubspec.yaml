@@ -17,6 +17,9 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
 
+  # Encrypted Key Storage
+  flutter_secure_storage: ^9.2.4
+
   # Local AI Inference (Android)
   llama_flutter_android: ^0.2.0
   sd_flutter_android:
