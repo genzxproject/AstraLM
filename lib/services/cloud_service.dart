@@ -17,23 +17,23 @@ class CloudService extends GetxService {
   String get _apiKey {
     switch (_provider) {
       case 'anthropic':
-        return _hive.getSetting(AppConstants.keyAnthropicKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyAnthropicKey) ?? '';
       case 'google':
-        return _hive.getSetting(AppConstants.keyGoogleKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyGoogleKey) ?? '';
       case 'kimi':
-        return _hive.getSetting(AppConstants.keyKimiKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyKimiKey) ?? '';
       case 'stability':
-        return _hive.getSetting(AppConstants.keyStabilityKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyStabilityKey) ?? '';
       case 'nvidia':
-        return _hive.getSetting(AppConstants.keyNvidiaKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyNvidiaKey) ?? '';
       case 'openrouter':
-        return _hive.getSetting(AppConstants.keyOpenRouterKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyOpenRouterKey) ?? '';
       case 'deepseek':
-        return _hive.getSetting(AppConstants.keyDeepSeekKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyDeepSeekKey) ?? '';
       case 'custom':
-        return _hive.getSetting(AppConstants.keyCustomCloudKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyCustomCloudKey) ?? '';
       default:
-        return _hive.getSetting(AppConstants.keyOpenaiKey) ?? '';
+        return await _hive.getSecureSetting(AppConstants.keyOpenaiKey) ?? '';
     }
   }
 

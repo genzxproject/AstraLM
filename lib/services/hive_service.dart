@@ -39,21 +39,24 @@ class HiveService extends GetxService {
   bool _isSecureKey(String key) =>
       _secureKeyPatterns.any((p) => key.toLowerCase().contains(p));
 
-  Future<T?> getSetting<T>(String key, {T? defaultValue}) async {
-    if (_isSecureKey(key)) {
-      final val = await _secureStorage.read(key: key);
-      if (val != null) return val as T;
-    }
+  /// Read sensitive keys from Android Keystore (async).
+  Future<String?> getSecureSetting(String key) async {
+    return await _secureStorage.read(key: key);
+  }
+
+  T? getSetting<T>(String key, {T? defaultValue}) {
     return _settingsBox.get(key, defaultValue: defaultValue) as T?;
   }
 
   Future<void> setSetting(String key, dynamic value) async {
+    // Sensitive keys: write to Android Keystore (and remove from plain Hive).
     if (_isSecureKey(key)) {
       if (value == null || value.toString().isEmpty) {
         await _secureStorage.delete(key: key);
       } else {
         await _secureStorage.write(key: key, value: value.toString());
       }
+      await _settingsBox.delete(key); // purge plain-text copy
       return;
     }
     await _settingsBox.put(key, value);
